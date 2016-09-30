@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    
+    <h:head>
+        <title>CRUD Grupos-Alumnos</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!--Plugins Frameworks-->
+        <h:outputScript library="js" name="jquery-3.1.0.min.js" />
+        <h:outputStylesheet library="css" name="bootstrap.min.css"/>
+        <h:outputScript library="js" name="bootstrap.min.js"/>
+        <h:outputStylesheet library="css" name="font-awesome.min.css"/>
+        <!--Plugins Alerta-->
+        <h:outputStylesheet library="css" name="toastr.min.css"/>
+        <h:outputScript library="js" name="toastr.min.js"/>
+        <h:outputScript library="js" name="custom/mens.js"/>
+        <!--Plugins Tablas-->
+        <h:outputStylesheet library="css" name="bootstrap-table.css" />
+        <h:outputStylesheet library="css" name="custom/table.mini.css" />
+        <h:outputScript library="js" name="bootstrap-table.js" />
+        <h:outputScript library="js" name="bootstrap-table-es-AR.min.js" />
+        <!--Plugins Confirmation [Eliminar]-->
+        <h:outputScript library="js" name="bootstrap-tooltip.js"/>
+        <h:outputScript library="js" name="bootstrap-confirmation.js"/>
+        <!--Plugins Exclusivos de esta página-->
+        <h:outputScript library="js" name="custom/grupAlum.js"/>
+        
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/favicon.ico']}"/>
+        <style>
+            .field-error
+            {
+                color: #a94442; 
+                display: block;
+                font-size: 10px;
+            }
+            .field-error:first-letter
+            {
+                text-transform: capitalize;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <div class="row col-md-12">
+            <div class="col-md-4 col-xs-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Formulario</div>
+                    <div class="panel-body">
+                        <h:form>
+                            <!--Form exclusivo para los remotos-->
+                            <p:remoteCommand name="consGrupAlum" actionListener="#{gruposAlumnosBean.cons()}" update=":FormGrupAlum" 
+                                             oncomplete="INIT_OBJE_GRUP_ALUM();" global="true"/>
+                            <p:remoteCommand name="elimGrupAlum" actionListener="#{gruposAlumnosBean.elim()}" update=":FormGrupAlum :ContGrupAlum" 
+                                             oncomplete="INIT_OBJE_GRUP_ALUM();"  global="true"/>
+                        </h:form>
+                        <h:form id="FormGrupAlum">
+                            <h:inputHidden id="codi" value="#{gruposAlumnosBean.objeGrupAlum.codiGrupAlum}" />
+                            <div class="input-group input-group-xs">
+                                <h:outputLabel  for="grup" value="Grupo: "/>
+                                <h:selectOneMenu id="grup" value="#{gruposAlumnosBean.objeGrupAlum.codiGrup}" class="form-control">
+                                    <f:selectItem pt:data-hidden="true" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{gruposBean.listGrup}" var="lst" itemLabel="#{lst.nombGrup}" itemValue="#{lst}"/>
+                                    <f:converter converterId="PooConv"/>
+                                </h:selectOneMenu>
+                                <h:message for="grup" errorClass="field-error" />
+                            </div>
+                            <div class="input-group input-group-xs">
+                                <h:outputLabel  for="alum" value="Alumno: "/>
+                                <h:selectOneMenu id="alum" value="#{gruposAlumnosBean.objeGrupAlum.codiAlum}" class="form-control">
+                                    <f:selectItem pt:data-hidden="true" itemLabel="Seleccione..."/>
+                                    <f:selectItems value="#{alumnosBean.listAlum}" var="lst2" itemLabel="#{lst2.nombAlum} #{lst2.apelAlum}" itemValue="#{lst2}"/>
+                                    <f:converter converterId="PooConv"/>
+                                </h:selectOneMenu>
+                                <h:message for="alum" errorClass="field-error" />
+                            </div>
+                            <div class="input-group input-group-xs">
+                                <h:outputLabel  for="esta" value="Estado: "/>
+                                <h:selectOneMenu id="esta" value="#{gruposAlumnosBean.objeGrupAlum.estaGrupAlum}" class="form-control">
+                                    <f:selectItem pt:data-hidden="true" itemLabel="Seleccione..."/>
+                                    <f:selectItem itemValue="1" itemLabel="Activo"/>
+                                    <f:selectItem itemValue="0" itemLabel="Inactivo"/>
+                                </h:selectOneMenu>
+                                <h:message for="esta" errorClass="field-error" />
+                            </div>
+                            <div class="input-group-btn right" style="padding-top: 5px;">
+                                <div class="btn-group">
+                                    <h:commandLink id="btonCanc" class="btn btn-default btn-xs">
+                                        <p:ajax listener="#{gruposAlumnosBean.limpForm()}" process="@form" update="@form" global="true"/>
+                                        <i class="fa fa-mail-forward"/> Cancelar
+                                    </h:commandLink>
+                                    <h:commandLink id="btonGuar" class="btn btn-success btn-xs" rendered="#{gruposAlumnosBean.guardar}">
+                                        <p:ajax listener="#{gruposAlumnosBean.guar()}" process="@form" update="@form :ContGrupAlum" oncomplete="INIT_OBJE_GRUP_ALUM();"/>
+                                        <i class="fa fa-plus"/> Guardar
+                                    </h:commandLink>
+                                    <h:commandLink id="btonModi" class="btn btn-primary btn-xs" rendered="#{!gruposAlumnosBean.guardar}">
+                                        <p:ajax listener="#{gruposAlumnosBean.modi()}" process="@form" update="@form :ContGrupAlum" oncomplete="INIT_OBJE_GRUP_ALUM();"/>
+                                        <i class="fa fa-edit"/> Modificar
+                                    </h:commandLink>
+                                    <h:outputLink id="btonElim" class="btn btn-danger btn-xs" rendered="#{!gruposAlumnosBean.guardar}" 
+                                        pt:data-toggle="confirmation" pt:data-btn-ok-label="Sí" pt:data-btn-ok-icon="fa fa-times"
+                                        pt:data-btn-ok-class="btn-danger btn-xs" pt:data-btn-cancel-label="No" pt:data-btn-cancel-icon="fa fa-mail-forward"
+                                        pt:data-btn-cancel-class="btn-default btn-xs" pt:data-title="¿Esta seguro que desea eliminar?">
+                                        <i class="fa fa-times"/> Eliminar
+                                    </h:outputLink>
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 col-xs-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Tabla de Datos</div>
+                    <div class="panel-body">
+                        <h:panelGroup id="ContGrupAlum">
+                            <h:dataTable pt:data-id="TablGrupAlum" id="TablGrupAlum" value="#{gruposAlumnosBean.listGrupAlum}"
+                                        var="fila" class="boottable" pt:data-toolbar="#toolbar"
+                                        styleClass="table-hover table-bordered table-condensed table-striped table-responsive"
+                                        pt:data-show-refresh="false" pt:data-show-toggle="false" pt:data-show-columns="false" 
+                                        pt:data-search="true" pt:data-pagination="true" pt:data-page-list="[5, 10, 20, 50]"
+                                        pt:data-click-to-select="true"  pt:data-select-item-name="radio"
+                                        pt:data-single-select="true">                                
+                               <h:column pt:data-field="state" pt:data-checkbox="true">
+                               </h:column>
+                               <h:column pt:data-align="right" pt:data-sortable="true" pt:data-field="id">
+                                   <f:facet name="header">Código</f:facet>
+                                   <h:outputText value="#{fila.codiGrupAlum}"/>
+                               </h:column>
+                               <h:column pt:data-sortable="true" pt:data-field="nomb">
+                                   <f:facet name="header">Alumno</f:facet>
+                                   <h:outputText value="#{fila.codiAlum.nombAlum.concat(' ').concat(fila.codiAlum.apelAlum)}"/>   
+                               </h:column>
+                               <h:column pt:data-sortable="true">
+                                   <f:facet name="header">Grupo</f:facet>
+                                   <h:outputText value="#{fila.codiGrup.nombGrup}"/>
+                               </h:column>
+                               <h:column pt:data-sortable="true">
+                                   <f:facet name="header">Estado</f:facet> 
+                                   <h:panelGroup class="label label-success" rendered="#{fila.estaGrupAlum eq '1'}">
+                                       <i class="fa fa-unlock"/> Activo</h:panelGroup>
+                                   <h:panelGroup class="label label-danger" rendered="#{fila.estaGrupAlum ne '1'}">
+                                       <i class="fa fa-lock"/> Inactivo</h:panelGroup>
+                               </h:column>
+                           </h:dataTable>                            
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </h:body>
+</html>
