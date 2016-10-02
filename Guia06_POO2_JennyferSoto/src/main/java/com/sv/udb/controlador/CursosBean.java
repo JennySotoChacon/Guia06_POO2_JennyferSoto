@@ -15,6 +15,7 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -30,7 +31,8 @@ public class CursosBean implements Serializable{
     private Cursos objeCurs;
     private List<Cursos> listCurs;
     private boolean guardar;
-    private log4j loggi;
+    
+    private static Logger loggi = Logger.getLogger(AlumnosBean.class);
 
     public Cursos getObjeCurs() {
         return objeCurs;
@@ -59,13 +61,14 @@ public class CursosBean implements Serializable{
     {
         this.limpForm();
         this.consTodo();
-        loggi = new log4j();
+        loggi.debug("Se creo un nuevo objeto");
     }
     
     public void limpForm()
     {
         this.objeCurs = new Cursos();
-        this.guardar = true;    
+        this.guardar = true;
+        loggi.debug("Limpieza de formulario");  
     }
     
     public void guar()
@@ -77,6 +80,7 @@ public class CursosBean implements Serializable{
             this.listCurs.add(this.objeCurs);
             this.limpForm();
             ctx.execute("setMessage('MESS_SUCC', 'Atención', 'Datos guardados')");
+            loggi.info("Nuevo curso guardado");
         }
         catch(Exception ex)
         {
@@ -98,6 +102,7 @@ public class CursosBean implements Serializable{
             FCDECurs.edit(this.objeCurs);
             this.listCurs.add(this.objeCurs); //Agrega el objeto modificado
             ctx.execute("setMessage('MESS_SUCC', 'Atención', 'Datos Modificados')");
+            loggi.info("Curso modificado");
         }
         catch(Exception ex)
         {
@@ -119,10 +124,12 @@ public class CursosBean implements Serializable{
             this.listCurs.remove(this.objeCurs);
             this.limpForm();
             ctx.execute("setMessage('MESS_SUCC', 'Atención', 'Datos Eliminados')");
+            loggi.info("Curso eliminado");
         }
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al eliminar')");
+            loggi.error("No se pudo eliminar el curso");
         }
         finally
         {
@@ -135,6 +142,7 @@ public class CursosBean implements Serializable{
         try
         {
             this.listCurs = FCDECurs.findAll();
+            loggi.info("Todos los cursos consultado");
         }
         catch(Exception ex)
         {
