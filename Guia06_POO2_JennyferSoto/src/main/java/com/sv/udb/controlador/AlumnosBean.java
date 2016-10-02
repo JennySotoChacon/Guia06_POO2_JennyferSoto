@@ -7,6 +7,7 @@ package com.sv.udb.controlador;
 
 import com.sv.udb.ejb.AlumnosFacadeLocal;
 import com.sv.udb.modelo.Alumnos;
+import com.sv.udb.utils.log4j;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -29,6 +30,7 @@ public class AlumnosBean implements Serializable {
     private Alumnos objeAlum;
     private List<Alumnos> listAlum;
     private boolean guardar;
+    private log4j loggi;
     
     public Alumnos getObjeAlum() {
         return objeAlum;
@@ -56,6 +58,7 @@ public class AlumnosBean implements Serializable {
     {
         this.limpForm();
         this.consTodo();
+        loggi = new log4j();
     }
     
     public void limpForm()
@@ -77,6 +80,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al guardar ')");
+            loggi.error("No se pudo guardar el alumno");
         }
         finally
         {
@@ -97,6 +101,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al modificar ')");
+            loggi.error("No se pudo modificar el alumno");
         }
         finally
         {
@@ -150,10 +155,12 @@ public class AlumnosBean implements Serializable {
             this.guardar = false;
             ctx.execute("setMessage('MESS_SUCC', 'Atención', 'Consultado a " + 
                     String.format("%s %s", this.objeAlum.getNombAlum(), this.objeAlum.getApelAlum()) + "')");
+            loggi.info("Alumno consultado");
         }
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al consultar')");
+            loggi.error("No se pudo consultar");
         }
         finally
         {

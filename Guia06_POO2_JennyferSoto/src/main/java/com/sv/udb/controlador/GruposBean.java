@@ -7,6 +7,7 @@ package com.sv.udb.controlador;
 
 import com.sv.udb.ejb.GruposFacadeLocal;
 import com.sv.udb.modelo.Grupos;
+import com.sv.udb.utils.log4j;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -29,6 +30,7 @@ public class GruposBean implements Serializable {
     private Grupos objeGrup;
     private List<Grupos> listGrup;
     private boolean guardar;
+    private log4j loggi;
 
     public Grupos getObjeGrup() {
         return objeGrup;
@@ -58,6 +60,7 @@ public class GruposBean implements Serializable {
     {
         this.limpForm();
         this.consTodo();
+        loggi = new log4j();
     }
     
     public void limpForm()
@@ -79,6 +82,7 @@ public class GruposBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al guardar ')");
+            loggi.error("No se pudo guardar el grupo");
         }
         finally
         {
@@ -99,6 +103,7 @@ public class GruposBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al modificar ')");
+            loggi.error("No se pudo modificar el grupo");
         }
         finally
         {
@@ -152,10 +157,12 @@ public class GruposBean implements Serializable {
             this.guardar = false;
             ctx.execute("setMessage('MESS_SUCC', 'Atención', 'Consultado a " + 
                     String.format("%s", this.objeGrup.getNombGrup()) + "')");
+            loggi.info("Grupo consultado");
         }
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al consultar')");
+            loggi.error("No se pudo consultar");
         }
         finally
         {
