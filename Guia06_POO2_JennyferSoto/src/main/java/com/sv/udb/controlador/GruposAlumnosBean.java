@@ -5,6 +5,7 @@
  */
 package com.sv.udb.controlador;
 
+import static com.fasterxml.jackson.databind.util.ClassUtil.getRootCause;
 import com.sv.udb.ejb.GruposAlumnosFacadeLocal;
 import com.sv.udb.modelo.GruposAlumnos;
 import com.sv.udb.utils.log4j;
@@ -15,6 +16,7 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -30,7 +32,8 @@ public class GruposAlumnosBean implements Serializable{
     private GruposAlumnos objeGrupAlum;
     private List<GruposAlumnos> listGrupAlum;
     private boolean guardar;
-    private log4j loggi;
+    
+    private static Logger loggi = Logger.getLogger(GruposAlumnos.class);
 
     public GruposAlumnos getObjeGrupAlum() {
         return objeGrupAlum;
@@ -60,7 +63,6 @@ public class GruposAlumnosBean implements Serializable{
     {
         this.limpForm();
         this.consTodo();
-        loggi = new log4j();
     }
     
     public void limpForm()
@@ -82,7 +84,7 @@ public class GruposAlumnosBean implements Serializable{
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al guardar ')");
-            loggi.error("No se pudo asignar alumno a grupo");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -103,7 +105,7 @@ public class GruposAlumnosBean implements Serializable{
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al modificar ')");
-            loggi.error("No se pudo modificar");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -124,6 +126,7 @@ public class GruposAlumnosBean implements Serializable{
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al eliminar')");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -140,6 +143,7 @@ public class GruposAlumnosBean implements Serializable{
         catch(Exception ex)
         {
             ex.printStackTrace();
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -160,7 +164,7 @@ public class GruposAlumnosBean implements Serializable{
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al consultar')");
-            loggi.error("No se pudo consultar");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {

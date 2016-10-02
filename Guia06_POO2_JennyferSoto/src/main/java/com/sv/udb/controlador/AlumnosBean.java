@@ -5,6 +5,7 @@
  */
 package com.sv.udb.controlador;
 
+import static com.fasterxml.jackson.databind.util.ClassUtil.getRootCause;
 import com.sv.udb.ejb.AlumnosFacadeLocal;
 import com.sv.udb.modelo.Alumnos;
 import com.sv.udb.utils.log4j;
@@ -84,7 +85,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al guardar ')");
-            loggi.error("No se pudo guardar el alumno");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -106,7 +107,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al modificar ')");
-            loggi.error("No se pudo modificar el alumno");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -128,7 +129,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al eliminar')");
-            loggi.error("No se pudo eliminar un alumno");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
@@ -168,7 +169,7 @@ public class AlumnosBean implements Serializable {
         catch(Exception ex)
         {
             ctx.execute("setMessage('MESS_ERRO', 'Atención', 'Error al consultar')");
-            loggi.error("No se pudo consultar");
+            loggi.error(getRootCause(ex).getMessage());
         }
         finally
         {
